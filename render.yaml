@@ -1,0 +1,26 @@
+# Render Blueprint - https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: obsidian
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon # Change to your preferred region
+    plan: starter # $7/month - has 512MB RAM, enough for Obsidian
+    
+    # Health check endpoint
+    healthCheckPath: /
+    
+    # Environment variables
+    envVars:
+      - key: TZ
+        value: Asia/Kolkata
+      - key: PUID
+        value: "1000"
+      - key: PGID
+        value: "1000"
+    
+    # Persistent disk for your vaults (IMPORTANT!)
+    disk:
+      name: obsidian-data
+      mountPath: /vaults
+      sizeGB: 1 # Increase if needed, costs extra
