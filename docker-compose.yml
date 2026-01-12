@@ -1,6 +1,9 @@
 services:
   obsidian:
-    image: ghcr.io/sytone/obsidian-remote:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: obsidian-custom:latest
     container_name: obsidian
     
     ports:
@@ -16,30 +19,12 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Asia/Kolkata
-      - OBSIDIAN_VAULT=/vaults
     
     # Shared memory for Chromium/Electron
-    shm_size: 2gb
-    
-    # Resource limits
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 512M
+    shm_size: 1gb
     
     # Required for Electron
     security_opt:
       - seccomp:unconfined
     
-    # Health check
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    
     restart: unless-stopped
-

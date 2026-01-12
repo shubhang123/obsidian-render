@@ -1,64 +1,48 @@
 # Obsidian Docker 🗃️
 
-Run Obsidian in your browser - perfect for work environments where you can't install desktop apps.
+Ultra-lightweight, high-performance Obsidian in your browser. Custom Alpine-based image with native-like input latency.
 
-## Quick Start (Local)
+## Features
+
+✅ **Multi-architecture**: ARM64 (Raspberry Pi) + AMD64 (Cloud)  
+✅ **Lightweight**: Alpine base (~400MB vs ~2GB for linuxserver)  
+✅ **Low latency**: Optimized VNC settings for responsive typing  
+✅ **Persistent**: Vaults and config survive container restarts  
+
+---
+
+## Quick Start
 
 ```bash
-docker-compose up -d
+# Build and run
+docker-compose up -d --build
+
+# Access at http://localhost:8080
 ```
 
-Access at: http://localhost:8080
-
 ---
 
-## Deploy to Railway 🚂 (Recommended)
+## Deploy to Cloud
 
-### Step 1: One-Click Deploy
+### Railway (Recommended)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/obsidian)
+1. Push to GitHub
+2. [railway.app](https://railway.app) → New Project → Deploy from GitHub
+3. Add Volume: mount path `/vaults`
 
-**Or manually:**
+### Render
 
-1. Go to [railway.app](https://railway.app) and sign in with GitHub
-2. Click **"New Project"** → **"Deploy from GitHub repo"**
-3. Select your `obsidian-render` repo
-4. Railway auto-detects `railway.json`
-5. Click **"Deploy"** → Wait 2-3 minutes
+1. [render.com](https://render.com) → New Blueprint → Connect repo
+2. Auto-detects `render.yaml`
 
-### Step 2: Add Persistent Storage
+### Raspberry Pi
 
-1. In your Railway project, click **"+ New"** → **"Volume"**
-2. Set mount path: `/vaults`
-3. Click **"Deploy"**
-
-### Step 3: Access Obsidian
-
-Railway gives you a URL like: `https://obsidian-render-production.up.railway.app`
-
----
-
-## Deploy to Render ☁️
-
-### Step 1: Deploy
-
-1. Go to [render.com/dashboard](https://dashboard.render.com)
-2. Click **"New +"** → **"Blueprint"**
-3. Connect your GitHub repo
-4. Render detects `render.yaml` automatically
-5. Click **"Apply"** → Wait 5-10 minutes
-
-### Step 2: Access
-
-URL format: `https://obsidian-xxxx.onrender.com`
-
----
-
-## Using Obsidian Git Plugin
-
-1. Open Obsidian in browser
-2. **Settings → Community Plugins → Browse** → Install **"Obsidian Git"**
-3. Use HTTPS + [Personal Access Token](https://github.com/settings/tokens) for auth
+```bash
+# On your Pi (64-bit OS required)
+git clone https://github.com/YOUR_USERNAME/obsidian-render.git
+cd obsidian-render
+docker-compose up -d --build
+```
 
 ---
 
@@ -66,29 +50,41 @@ URL format: `https://obsidian-xxxx.onrender.com`
 
 | File | Purpose |
 |------|---------|
-| `docker-compose.yml` | Local development |
-| `Dockerfile` | Container build |
-| `railway.json` | Railway deployment |
-| `render.yaml` | Render deployment |
+| `Dockerfile` | Alpine-based, multi-arch build |
+| `docker-compose.yml` | Local/Pi deployment |
+| `supervisord.conf` | Process management |
+| `start.sh` | Startup script |
+| `railway.json` | Railway config |
+| `render.yaml` | Render config |
 
 ---
 
-## Cost Comparison
+## Performance Tuning
 
-| Platform | Free Tier | Paid |
-|----------|-----------|------|
-| **Railway** | $5 credit/mo | $5+/mo |
-| **Render** | Spins down after 15min | $7/mo |
+The image includes:
+- **x11vnc**: Low-latency flags (`-defer 5 -wait 5 -ncache 10`)
+- **Electron**: Optimized flags (disabled throttling, hardware accel)
+- **Display**: 1920x1080 @ 96 DPI
 
-> **Tip**: Railway is better for daily use (no cold starts on free tier).
+For even lower latency on fast networks, edit `supervisord.conf`:
+```ini
+# Change defer/wait to 1ms (may increase CPU usage)
+-defer 1 -wait 1
+```
+
+---
+
+## Obsidian Git Plugin
+
+1. Install from Community Plugins
+2. Use HTTPS + [Personal Access Token](https://github.com/settings/tokens)
 
 ---
 
 ## Troubleshooting
 
-**Container won't start?** Check logs in dashboard, need 512MB+ RAM
+**Slow typing?** Check network latency; use wired connection if possible
 
-**Git plugin not working?** Use HTTPS + Personal Access Token (not SSH)
+**Won't start on Pi?** Ensure 64-bit OS and 2GB+ RAM
 
-**Vault not persisting?** Add a volume mounted to `/vaults`
-
+**Vault lost?** Mount `/vaults` volume for persistence
