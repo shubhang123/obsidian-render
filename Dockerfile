@@ -4,7 +4,8 @@
 
 FROM alpine:3.19
 
-ARG OBSIDIAN_VERSION=1.5.3
+# Latest stable: 1.10.6 (Nov 2025) - Update this when new versions release
+ARG OBSIDIAN_VERSION=1.10.6
 ARG TARGETARCH
 
 ENV DISPLAY=:0 \
