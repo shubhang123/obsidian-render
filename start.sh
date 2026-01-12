@@ -22,4 +22,4 @@ mkdir -p /home/obsidian/.config
 [ ! -L "/home/obsidian/.config/obsidian" ] && ln -sf /config /home/obsidian/.config/obsidian
 
 # Start supervisor
-exec /usr/bin/supervisord -c /etc/supervisord.conf
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
